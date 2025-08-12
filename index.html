@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy 10th Monthsary!</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        /* Custom styles to apply the font and animations */
+        body {
+            font-family: Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent; /* Removes blue highlight on mobile tap */
+        }
+        /* Fade-in animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 1s ease-in-out forwards;
+        }
+        /* Typing cursor effect */
+        .typing-cursor::after {
+            content: '|';
+            animation: blink 1s step-end infinite;
+        }
+        @keyframes blink {
+            from, to { color: transparent; }
+            50% { color: #e5e7eb; } /* gray-200 */
+        }
+    </style>
+</head>
+<body class="bg-black text-gray-200 flex items-center justify-center h-screen overflow-hidden">
+
+    <!-- Audio player for the background music -->
+    <!-- IMPORTANT: Replace "path/to/your/music.mp3" with the actual path to your audio file -->
+    <audio id="background-music" loop>
+        <source src="d4vd - Here With Me (Live)  The Circle Sessions.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <div id="main-container" class="text-center p-4">
+
+        <!-- Initial View with Heart Button -->
+        <div id="initial-view">
+            <button id="play-button" class="bg-white rounded-full w-32 h-32 md:w-40 md:h-40 flex items-center justify-center shadow-2xl shadow-rose-500/20 transition-transform duration-300 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-rose-500/50">
+                <!-- Heart SVG Icon -->
+                <svg class="w-16 h-16 md:w-20 md:h-20 text-black" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+            </button>
+            <p id="prompt-text" class="mt-6 text-xl text-white font-semibold animate-pulse">Touch the LOVE</p>
+        </div>
+
+        <!-- Message View -->
+        <div id="message-view" class="hidden">
+            <div class="bg-black/50 backdrop-blur-sm p-6 md:p-10 rounded-2xl shadow-2xl shadow-rose-500/30 max-w-lg w-full border border-gray-700">
+                <p id="message-line" class="text-3xl md:text-4xl text-white h-24 flex items-center justify-center typing-cursor"></p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- DOM ELEMENT REFERENCES ---
+        const playButton = document.getElementById('play-button');
+        const initialView = document.getElementById('initial-view');
+        const messageView = document.getElementById('message-view');
+        const messageLine = document.getElementById('message-line');
+        const backgroundMusic = document.getElementById('background-music');
+
+        // --- MESSAGES TO DISPLAY ---
+        // You can easily customize these messages!
+        const messages = [
+            "Happy 10th Monthsary baks 🥳 hehe",
+            "Grabi kalaksi la, harani nakit mag 1st anniversary haha",
+            "Sorry kun wary kit makalakaw huhu",
+            "Bawi nalaak pag may klasi na",
+            "Anyway, this a short message for you baks",
+            "Thank you for everything 😉...",
+            "For staying by my side",
+            "For making me laugh, smile and kilig",
+            "For sending pics haha, kay pag may time na...",
+            "malungcat ak, only a glimpse of your pics nagigin okay ak ☺️ haha",
+            "For experiencing what it feels like to be loved by you 😚",
+            "For sending VM, if i feel sad or missing you...",
+            "listening to your voice while you sang a song, it make me calm 🥹",
+            "Damo pa pait baks pero makuri ma explain an iba hahaha",
+            "I love you very much baks, congrats and stay strong to us :3",
+            "Kaya baks ayaw kalimti...",
+            "To drink milo everyday hahaha jk",
+            "That's all baks ☺️, Thank You and I Love You 😽",
+            "Happy 10th monthsary again baks 🥹",
+            "- Always and Forever, my baks(Jasmine). ❤️"
+        ];
+
+        let messageIndex = 0;
+
+        // --- TYPEWRITER IN-ANIMATION ---
+        function typeWriter(text, element, callback) {
+            let charIndex = 0;
+            element.innerHTML = ''; // Clear previous text
+            
+            function type() {
+                if (charIndex < text.length) {
+                    element.innerHTML += text.charAt(charIndex);
+                    charIndex++;
+                    setTimeout(type, 90); // Typing speed
+                } else {
+                    if (callback) callback();
+                }
+            }
+            type();
+        }
+
+        // --- TYPEWRITER OUT-ANIMATION (DELETE) ---
+        function deleteWriter(element, callback) {
+            let text = element.innerHTML;
+            let charIndex = text.length;
+
+            function erase() {
+                if (charIndex > 0) {
+                    element.innerHTML = text.substring(0, charIndex - 1);
+                    charIndex--;
+                    setTimeout(erase, 50); // Deleting speed
+                } else {
+                    if (callback) callback();
+                }
+            }
+            erase();
+        }
+
+        // --- MESSAGE DISPLAY LOGIC ---
+        // Manages the cycle of typing, pausing, and deleting messages.
+        function showNextMessage() {
+            if (messageIndex >= messages.length) {
+                return; // Stop when all messages are shown
+            }
+
+            const currentMessage = messages[messageIndex];
+
+            // 1. Type the new message
+            typeWriter(currentMessage, messageLine, () => {
+                // 2. After typing, wait 3 seconds
+                setTimeout(() => {
+                    // 3. Delete the message
+                    deleteWriter(messageLine, () => {
+                        // 4. Move to the next message and repeat the cycle
+                        messageIndex++;
+                        showNextMessage();
+                    });
+                }, 3000); // How long the message stays on screen
+            });
+        }
+
+        // --- EVENT LISTENER ---
+        // Starts everything on button click.
+        playButton.addEventListener('click', () => {
+            // 1. Play the background music
+            backgroundMusic.play().catch(error => {
+                console.log("Audio playback failed. User interaction is likely needed.", error);
+            });
+
+            // 2. Animate the transition between views
+            initialView.classList.add('transition-opacity', 'duration-1000', 'ease-out');
+            initialView.style.opacity = '0';
+            
+            setTimeout(() => {
+                initialView.classList.add('hidden');
+                
+                messageView.classList.remove('hidden');
+                messageView.classList.add('animate-fade-in');
+
+                // 3. Start displaying the messages
+                showNextMessage();
+            }, 1000);
+        });
+    </script>
+
+</body>
+</html>
